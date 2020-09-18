@@ -20,7 +20,7 @@ create table if not exists cards(
         constraint fk_deck_id foreign key(deck_id) references decks(deck_id)
 );
 --decks
-insert into decks values (default, 'this is a test2');
+insert into decks values (default, 'this is a test');
 insert into decks values (default, ?);
 
 delete from decks where (deck_id) = ?;
@@ -35,7 +35,10 @@ SELECT deck_id, deck_name FROM decks;
 --decks
 
 --cards
-insert into cards values (2, default, 'question', 'answer', 'example');
+insert into cards values (1, default, 'question', 'answer', 'example');
+insert into cards values (?, default, ?,?,?);
+delete from cards where (card_id) = ?;
+update cards set question = ?, answer = ?, example = ? where card_id =?;
 
 select count (card_id) from cards where deck_id = ?;
 

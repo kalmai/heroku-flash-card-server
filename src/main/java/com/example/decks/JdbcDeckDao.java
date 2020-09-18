@@ -1,7 +1,5 @@
 package com.example.decks;
 
-import com.example.decks.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,9 +35,27 @@ public class JdbcDeckDao implements DeckDao{
 		return decks;
 	}
 	
-	public String test() {
-		String str = "this is a test";
-		return str;
+	public void createDeck(String deckName) {		
+		String sql = "insert into decks values (default, ?)";
+		jdbcTemplate.update(sql, deckName);
+	}
+	
+	public void deleteDeck(int deckId) {
+		String cardNotNull = "select count (card_id) from cards where deck_id = ?";
+		Object param = 1;
+		int result = jdbcTemplate.queryForObject(cardNotNull, new Object[] {param} ,Integer.class);
+		if(result != 0) {
+			String sql = "delete from cards where (deck_id) = ?";
+			jdbcTemplate.queryForRowSet(sql,deckId);
+		}
+		
+		String sql = "delete from decks where (deck_id) = ?";
+		jdbcTemplate.update(sql,deckId);	
+	}
+	
+	public void editDeckName(Deck deck) {
+		String sql = "update decks set deck_name = ? where deck_id = ?";
+		jdbcTemplate.update(sql,deck.getDeck_name(), deck.getDeck_id());
 	}
 
 }

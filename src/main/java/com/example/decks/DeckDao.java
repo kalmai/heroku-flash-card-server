@@ -4,5 +4,7 @@ import java.util.List;
 
 public interface DeckDao {
 	List<Deck> getDecks();
-	String test();
+	void createDeck(String deckName);
+	void deleteDeck(int deckId);
+	void editDeckName(Deck deck);
 }

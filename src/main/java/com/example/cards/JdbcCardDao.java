@@ -23,7 +23,7 @@ public class JdbcCardDao implements CardDao{
 	public List<Card> getCards(int deckId){
 		List<Card> cards = new ArrayList<Card>();
 		
-		String sql = "SELECT deck_id, card_id, question, answer, example FROM cards where deck_id = ?";
+		String sql = "SELECT deck_id, card_id, question, answer, example FROM cards where deck_id = ? ORDER BY deck_id ASC";
 		SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, deckId);
 		
 		while(rows.next()) {

@@ -23,7 +23,7 @@ public class JdbcDeckDao implements DeckDao{
 	public List<Deck> getDecks() {
 		List<Deck> decks = new ArrayList<Deck>();
 		
-		String sql = "SELECT deck_id, deck_name FROM decks";		
+		String sql = "SELECT deck_id, deck_name FROM decks ORDER BY deck_id ASC";		
 		SqlRowSet rows = jdbcTemplate.queryForRowSet(sql);
 		
 		while(rows.next()) {
@@ -41,14 +41,6 @@ public class JdbcDeckDao implements DeckDao{
 	}
 	
 	public void deleteDeck(int deckId) {
-		String cardNotNull = "select count (card_id) from cards where deck_id = ?";
-		Object param = 1;
-		int result = jdbcTemplate.queryForObject(cardNotNull, new Object[] {param} ,Integer.class);
-		if(result != 0) {
-			String sql = "delete from cards where (deck_id) = ?";
-			jdbcTemplate.queryForRowSet(sql,deckId);
-		}
-		
 		String sql = "delete from decks where (deck_id) = ?";
 		jdbcTemplate.update(sql,deckId);	
 	}

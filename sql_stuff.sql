@@ -19,6 +19,29 @@ create table if not exists cards(
         primary key (deck_id, card_id),
         constraint fk_deck_id foreign key(deck_id) references decks(deck_id) on delete cascade
 );
+
+create table if not exists scores(
+        score_id serial,
+        deck_id int not null,
+        user_name varchar(30) not null,
+        score int not null,
+        date_inserted timestamp not null,
+        
+        primary key(score_id),
+        constraint fk_deck_id foreign key (deck_id) references decks(deck_id)
+);
+
+--scores
+SELECT score_id, deck_id, user_name, score, date_inserted::date FROM scores;
+INSERT INTO scores VALUES (default, 1, 'testname', 100, '2020-09-23');
+select distinct on (score) * from scores limit 10;
+--select scores.score_id, scores.deck_id, scores.user_name, avg(scores.score) as score, scores.date_inserted::date from scores where scores.deck_id = ? group by scores.score_id order by score desc;
+select scores.deck_id, scores.user_name, avg(scores.score) as score, scores.date_inserted::date as date_inserted from scores where deck_id = ? group by scores.user_name, scores.deck_id, scores.date_inserted::date order by score desc limit 10;
+select score_id, deck_id, user_name, score, date_inserted::date FROM scores where user_name = ?;
+insert into scores values (default, ? , ?, ? ,?);
+--scores
+
+
 --decks
 insert into decks values (default, 'DO NOT DELETE');
 insert into decks values (default, ?);
@@ -45,12 +68,14 @@ update cards set question = ?, answer = ?, example = ? where card_id =?;
 select count (card_id) from cards where deck_id = ?;
 
 select * from cards;
-SELECT deck_id, card_id, question, answer, example FROM cards where deck_id = ?;
+SELECT deck_id, card_id, question, answer, example FROM cards where deck_id = ? ORDER BY deck_id ASC;
+select deck_id, card_id, question, answer, example FROM cards where deck_id = ? and card_id = ?;
 --cards
 
 
 drop table if exists decks;
 drop table if exists cards;
+drop table if exists scores;
 
 --card data
 insert into cards values (1, default, 'what is an object?', 'an object is an entity that has states and behaviors', 'a car could be defined as an object with different attributes: color - red, shift - automatic, ect');
@@ -75,3 +100,4 @@ insert into cards values (77, default, '','','');
 insert into cards values (77, default, '','','');
 
 --card data
+

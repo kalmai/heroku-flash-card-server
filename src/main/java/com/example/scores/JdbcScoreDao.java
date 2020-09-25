@@ -33,7 +33,6 @@ public class JdbcScoreDao implements ScoreDao{
 			score.setDeck_id(rows.getInt("deck_id"));
 			score.setUser_name(rows.getString("user_name"));
 			score.setScore(rows.getDouble("score"));
-			score.setDate_inserted(rows.getDate("date_inserted").toLocalDate());
 			scores.add(score);
 		}
 		return scores;

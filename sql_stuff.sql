@@ -36,7 +36,7 @@ SELECT score_id, deck_id, user_name, score, date_inserted::date FROM scores;
 INSERT INTO scores VALUES (default, 1, 'testname', 100, '2020-09-23');
 select distinct on (score) * from scores limit 10;
 --select scores.score_id, scores.deck_id, scores.user_name, avg(scores.score) as score, scores.date_inserted::date from scores where scores.deck_id = ? group by scores.score_id order by score desc;
-select scores.deck_id, scores.user_name, avg(scores.score) as score, scores.date_inserted::date as date_inserted from scores where deck_id = ? group by scores.user_name, scores.deck_id, scores.date_inserted::date order by score desc limit 10;
+select scores.deck_id, scores.user_name, avg(scores.score) as score from scores where deck_id = ? group by scores.user_name, scores.deck_id order by score desc limit 10;
 select score_id, deck_id, user_name, score, date_inserted::date FROM scores where user_name = ?;
 insert into scores values (default, ? , ?, ? ,?);
 --scores

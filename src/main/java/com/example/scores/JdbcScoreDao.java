@@ -25,7 +25,7 @@ public class JdbcScoreDao implements ScoreDao{
 	public List<Score> getScores(int deckId){
 		List<Score> scores = new ArrayList<Score>();
 		
-		String sql = "select scores.deck_id, scores.user_name, avg(scores.score) as score, scores.date_inserted::date as date_inserted from scores where deck_id = ? group by scores.user_name, scores.deck_id, scores.date_inserted::date order by score desc limit 10";
+		String sql = "select scores.deck_id, scores.user_name, avg(scores.score) as score from scores where deck_id = ? group by scores.user_name, scores.deck_id order by score desc limit 10";
 		SqlRowSet rows = jdbcTemplate.queryForRowSet(sql,deckId);
 		
 		while(rows.next()) {

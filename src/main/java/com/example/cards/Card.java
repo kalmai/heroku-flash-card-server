@@ -6,9 +6,18 @@ public class Card {
 	String question;
 	String answer;
 	String example;
+	long user_id;
 	
 	public Card() {
 		
+	}
+	
+	public long getUser_id() {
+		return user_id;
+	}
+
+	public void setUser_id(long user_id) {
+		this.user_id = user_id;
 	}
 
 	public long getDeck_id() {

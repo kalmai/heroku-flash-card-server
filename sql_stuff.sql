@@ -1,67 +1,97 @@
-start transaction;
-
-rollback;
+drop table if exists decks;
+drop table if exists cards;
+drop table if exists scores;
+drop table if exists users;
 
 create table if not exists decks (
+        user_id int,
         deck_id serial,
         deck_name varchar(30) not null,
+        is_public boolean not null,
         
-        primary key (deck_id)
+        primary key (deck_id),
+        constraint fk_user_id foreign key(user_id) references users(user_id) on delete cascade
 );
+
+create table if not exists users (
+        user_id serial,
+        user_name varchar(30) not null unique,
+        
+        primary key (user_id)
+);
+
+--users
+insert into users values (default, 'tester2');
+select * from users;
+SELECT user_id, user_name FROM users where user_name = ?;
+insert into users values (default, ?);
+delete from users where (user_id) = ?;
+--users
 
 create table if not exists cards(
         deck_id int not null,
         card_id serial,
+        user_id int not null,
         question varchar(255) not null,
         answer varchar(255) not null,
         example varchar(255),
         
         primary key (deck_id, card_id),
-        constraint fk_deck_id foreign key(deck_id) references decks(deck_id) on delete cascade
+        constraint fk_deck_id foreign key(deck_id) references decks(deck_id) on delete cascade,
+        constraint fk_user_id foreign key (user_id) references users(user_id) on delete cascade
 );
 
 create table if not exists scores(
         score_id serial,
         deck_id int not null,
-        user_name varchar(30) not null,
+        user_id int not null,
         score int not null,
         date_inserted timestamp not null,
         
         primary key(score_id),
-        constraint fk_deck_id foreign key (deck_id) references decks(deck_id)
+        constraint fk_deck_id foreign key (deck_id) references decks(deck_id),
+        constraint fk_user_id foreign key (user_id) references users(user_id)
 );
 
 --scores
-SELECT score_id, deck_id, user_name, score, date_inserted::date FROM scores;
-INSERT INTO scores VALUES (default, 1, 'testname', 100, '2020-09-23');
+SELECT score_id, deck_id, user_id, score, date_inserted::date FROM scores;
+INSERT INTO scores VALUES (default, 1, 1, 50, '2020-09-23');
+INSERT INTO scores (score_id, deck_id, user_id, score, date_inserted) VALUES (default, ?, ?, ?, ?);
+
 select distinct on (score) * from scores limit 10;
+select * from scores join users on scores.user_id = users.user_id;
 --select scores.score_id, scores.deck_id, scores.user_name, avg(scores.score) as score, scores.date_inserted::date from scores where scores.deck_id = ? group by scores.score_id order by score desc;
-select scores.deck_id, scores.user_name, avg(scores.score) as score from scores where deck_id = ? group by scores.user_name, scores.deck_id order by score desc limit 10;
-select score_id, deck_id, user_name, score, date_inserted::date FROM scores where user_name = ?;
+select scores.deck_id, scores.user_id, avg(scores.score) as score from scores join users on scores.user_id = users.user_id where scores.deck_id = ? group by scores.user_id, scores.deck_id order by score desc limit 10;
+select scores.score_id, scores.deck_id, scores.user_id, scores.score, scores.date_inserted::date, users.user_name FROM scores join users on scores.user_id = users.user_id where scores.user_id = ?;
 insert into scores values (default, ? , ?, ? ,?);
+select * from scores;
 --scores
 
-
 --decks
-insert into decks values (default, 'DO NOT DELETE');
+insert into decks values (2,default,'A public deck', false);
 insert into decks values (default, ?);
+insert into decks values (?,default,?,?);
+
+select * from decks;
+select * from decks where is_public = true union select * from decks where is_public = false and user_id = ? order by deck_id ASC;
+
 
 delete from decks where (deck_id) = ?;
 delete from cards where (deck_id) = ?;
 
 delete from decks where (deck_id) = ?;
 
-update decks set deck_name = ? where deck_id = ?;
+update decks set (deck_name, is_public) = (?,?) where deck_id = ?;
 
 select deck_id, deck_name from decks where deck_id = ?;
-select count (card_id) from cards where deck_id = ?;
 
 SELECT deck_id, deck_name FROM decks ORDER BY deck_id ASC;
 --decks
 
 --cards
-insert into cards values (10, default, 'question', 'answer', 'example');
-insert into cards values (?, default, ?,?,?);
+insert into cards values (1, default, 1, 'question', 'answer', 'example');
+INSERT INTO cards (deck_id, card_id, user_id, question, answer, example) VALUES (?, default, ?, ?, ?, ?);
+insert into cards values (?, default,?,?,?,?);
 delete from cards where (card_id) = ?;
 update cards set question = ?, answer = ?, example = ? where card_id =?;
 
@@ -72,10 +102,6 @@ SELECT deck_id, card_id, question, answer, example FROM cards where deck_id = ? 
 select deck_id, card_id, question, answer, example FROM cards where deck_id = ? and card_id = ?;
 --cards
 
-
-drop table if exists decks;
-drop table if exists cards;
-drop table if exists scores;
 
 --card data
 insert into cards values (1, default, 'what is an object?', 'an object is an entity that has states and behaviors', 'a car could be defined as an object with different attributes: color - red, shift - automatic, ect');
@@ -100,4 +126,7 @@ insert into cards values (77, default, '','','');
 insert into cards values (77, default, '','','');
 
 --card data
+
+
+
 

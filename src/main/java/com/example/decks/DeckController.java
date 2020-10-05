@@ -23,15 +23,15 @@ public class DeckController {
 		this.dao = dao;
 	}
 
-	@RequestMapping(path="/decks", method= RequestMethod.GET)
-	public List<Deck> getDecks(){
-		return dao.getDecks();
+	@RequestMapping(path="/decks/{userId}", method= RequestMethod.GET)
+	public List<Deck> getDecks(@PathVariable int userId ){
+		return dao.getDecks(userId);
 	}
 	
 	@ResponseStatus(value = HttpStatus.OK)
-	@RequestMapping(path="/create-deck/{deckName}", method=RequestMethod.POST)
-	public void createDeck(@PathVariable String deckName) {
-		dao.createDeck(deckName);
+	@RequestMapping(path="/create-deck", method=RequestMethod.POST)
+	public void createDeck(@RequestBody Deck deck) {
+		dao.createDeck(deck.getUser_id(),deck.getDeck_name(),deck.isIs_public());
 	}
 	
 	@RequestMapping(path="/delete-deck/{deckId}", method=RequestMethod.DELETE)
@@ -41,6 +41,6 @@ public class DeckController {
 	
 	@RequestMapping(path="/update-deck",method=RequestMethod.POST)
 	public void updateDeck(@RequestBody Deck deck) {
-		dao.editDeckName(deck);
+		dao.editDeckName(deck.getDeck_name(), deck.isIs_public(), deck.getDeck_id());
 	}
 }

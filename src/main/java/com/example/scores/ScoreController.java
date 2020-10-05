@@ -29,13 +29,13 @@ public class ScoreController {
 		return dao.getScores(deckId);
 	}
 	
-	@RequestMapping(path="/user-scores/{userName}",method=RequestMethod.GET)
-	public List<Score> getUserScores(@PathVariable String userName){
-		return dao.getUserScores(userName);
+	@RequestMapping(path="/user-scores/{userId}",method=RequestMethod.GET)
+	public List<Score> getUserScores(@PathVariable int userId){
+		return dao.getUserScores(userId);
 	}
 	
 	@RequestMapping(path="/create-score",method=RequestMethod.POST)
 	public void createScore(@RequestBody Score score) {
-		dao.createScore(score.getDeck_id(), score.getUser_name(), score.getScore(),score.getDate_inserted());
+		dao.createScore(score.getDeck_id(), score.getUser_id(), score.getScore(),score.getDate_inserted());
 	}
 }

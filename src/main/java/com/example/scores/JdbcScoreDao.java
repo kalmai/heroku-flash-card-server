@@ -25,7 +25,7 @@ public class JdbcScoreDao implements ScoreDao{
 	public List<Score> getScores(int deckId){
 		List<Score> scores = new ArrayList<Score>();
 		
-		String sql = "select scores.deck_id, scores.user_name, avg(scores.score) as score from scores where deck_id = ? group by scores.user_name, scores.deck_id order by score desc limit 10";
+		String sql = "select scores.deck_id, users.user_name, avg(scores.score) as score from scores join users on scores.user_id = users.user_id where scores.deck_id = ? group by users.user_name, scores.deck_id order by score desc limit 10";
 		SqlRowSet rows = jdbcTemplate.queryForRowSet(sql,deckId);
 		
 		while(rows.next()) {
@@ -38,17 +38,18 @@ public class JdbcScoreDao implements ScoreDao{
 		return scores;
 	}
 	
-	public List<Score> getUserScores(String userName){
+	public List<Score> getUserScores(int userId){
 		List<Score> scores = new ArrayList<Score>();
 		
-		String sql = "select score_id, deck_id, user_name, score, date_inserted::date FROM scores where user_name = ?";
-		SqlRowSet rows = jdbcTemplate.queryForRowSet(sql,userName);
+		String sql = "select scores.score_id, scores.deck_id, scores.user_id, scores.score, scores.date_inserted::date, users.user_name FROM scores join users on scores.user_id = users.user_id where scores.user_id = ?";
+		SqlRowSet rows = jdbcTemplate.queryForRowSet(sql,userId);
 		
 		while(rows.next()) {
 			Score score = new Score();
 			score.setScore_id(rows.getInt("score_id"));
-			score.setDeck_id(rows.getInt("deck_id"));
 			score.setUser_name(rows.getString("user_name"));
+			score.setDeck_id(rows.getInt("deck_id"));
+			score.setUser_id(rows.getInt("user_id"));
 			score.setScore(rows.getDouble("score"));
 			score.setDate_inserted(rows.getDate("date_inserted").toLocalDate());
 			scores.add(score);
@@ -56,8 +57,8 @@ public class JdbcScoreDao implements ScoreDao{
 		return scores;
 	}
 	
-	public void createScore(int deckId, String userName, double score, LocalDate insertDate) {
-		String sql = "insert into scores values (default, ? , ?, ? ,?)";
-		jdbcTemplate.update(sql,deckId,userName,score,insertDate);
+	public void createScore(int deckId, int userId, double score, LocalDate insertDate) {
+		String sql = "INSERT INTO scores (score_id, deck_id, user_id, score, date_inserted) VALUES (default, ?, ?, ?, ?)";
+		jdbcTemplate.update(sql,deckId,userId,score,insertDate);
 	}
 }
